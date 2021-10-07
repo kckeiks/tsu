@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/kckeiks/tus/cmd"
+	"github.com/kckeiks/tsu/cmd"
   )
   
-  func main() {
-	cmd.Execute()
-  }
+func main() {
+  cmd.Execute()
+}

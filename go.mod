@@ -1,4 +1,4 @@
-module github.com/kckeiks/tus
+module github.com/kckeiks/tsu
 
 go 1.17
 
