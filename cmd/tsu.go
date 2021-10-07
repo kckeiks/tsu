@@ -12,11 +12,10 @@ var (
 	// Used for flags.
 	cfgFile     string
 	userLicense string
-
 	rootCmd = &cobra.Command{
 		Use:   "tsu [OPTIONS]",
 		Short: "Translate Strings to/from Unicode",
-		SilenceUsage: true,
+		Long:  "Translate strings to sequence of Unicode code points or UTF encoded values",
 	}
 )
 
@@ -27,7 +26,6 @@ func Execute() error {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cobra.yaml)")
 	rootCmd.PersistentFlags().StringP("author", "a", "YOUR NAME", "author name for copyright attribution")
 	rootCmd.PersistentFlags().StringVarP(&userLicense, "license", "l", "", "name of license for the project")
@@ -36,9 +34,6 @@ func init() {
 	viper.BindPFlag("useViper", rootCmd.PersistentFlags().Lookup("viper"))
 	viper.SetDefault("author", "NAME HERE <EMAIL ADDRESS>")
 	viper.SetDefault("license", "apache")
-
-	// rootCmd.AddCommand(rootCmd)
-	// rootCmd.AddCommand(initCmd)
 }
 
 func initConfig() {
