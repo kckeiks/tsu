@@ -9,7 +9,7 @@ import (
 var resultInHex bool
 var prefix string
 var strUTF8Cmd = &cobra.Command{
-	Use:   "utf8",
+	Use:   "utf8 string...",
 	Short: "Convert a string to a sequence of UTF-8 encoded values",
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
