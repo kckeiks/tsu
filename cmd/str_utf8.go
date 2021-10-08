@@ -6,8 +6,6 @@ import (
 	"unicode/utf8"
 )
 
-var resultInHex bool
-var prefix string
 var strUTF8Cmd = &cobra.Command{
 	Use:   "utf8 string...",
 	Short: "Convert a string to a sequence of UTF-8 encoded values",
@@ -35,9 +33,13 @@ func strUTF8CmdPrint(r rune) {
 	if removeSpace {
 		space = ""
 	}
-	if resultInHex {
-		fmt.Printf("%s%x%s", prefix, r, space)
-	} else {
-		fmt.Printf("%d%s", r, space)
+	result := make([]byte, 4)
+	n := utf8.EncodeRune(result, r)
+	for _, b := range result[:n] {
+		if resultInHex {
+			fmt.Printf("%s%x%s", prefix, b, space)
+		} else {
+			fmt.Printf("%d%s", b, space)
+		}
 	}
 }
