@@ -20,10 +20,6 @@ var (
 	}
 )
 
-var removeSpace bool
-var resultInHex bool
-var prefix string
-
 // Execute executes the root command.
 func Execute() error {
 	return rootCmd.Execute()

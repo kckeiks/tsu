@@ -7,7 +7,8 @@ import (
 	"unicode/utf8"
 )
 
-var inputIsString bool
+var removeSpaceConvertCmd bool
+var inputIsStrConvertCmd bool
 var unicodeCmdExample = 
 `
   Unicode code points may omit a prefix or include "U+"
@@ -25,14 +26,14 @@ var unicodeCmdExample =
   U+4EAC 
 `
 
-var unicodeCmd = &cobra.Command{
-	Use:   "unicode {code_point | -s string} ...",
+var convertCmd = &cobra.Command{
+	Use:   "convert {code_point | -s string} ...",
 	Short: "Convert string to/from Unicode code points",
 	Example: unicodeCmdExample,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		for _, str := range args {
-			if !inputIsString {
+			if !inputIsStrConvertCmd {
 				// input is sequence of Unicode code points
 				if str[:2] == "U+" {
 					str = str[2:]
@@ -53,17 +54,17 @@ var unicodeCmd = &cobra.Command{
 }
 
 func init() {
-	unicodeCmd.PersistentFlags().BoolVarP(&removeSpace, "remove-space", "", false, "removes space in between each digit")
-	unicodeCmd.Flags().BoolVarP(&inputIsString, "str", "s", false, "input is string")
-	rootCmd.AddCommand(unicodeCmd)
+	convertCmd.Flags().BoolVarP(&removeSpaceConvertCmd, "remove-space", "", false, "removes space in between each digit")
+	convertCmd.Flags().BoolVarP(&inputIsStrConvertCmd, "str", "s", false, "input is string")
+	rootCmd.AddCommand(convertCmd)
 }
 
 func unicodeCmdPrint(r rune) {
 	space := " "
-	if removeSpace {
+	if removeSpaceConvertCmd {
 		space = ""
 	}
-	if inputIsString {
+	if inputIsStrConvertCmd {
 		fmt.Printf("%U%s", r, space)
 	} else {
 		fmt.Printf("%c%s", r, space)
