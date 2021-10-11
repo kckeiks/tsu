@@ -8,20 +8,20 @@ import (
 )
 
 var removeSpaceConvertCmd bool
-var inputIsStrConvertCmd bool
+var inputCodePointConvertCmd bool
 var unicodeCmdExample = 
 `
   Unicode code points may omit a prefix or include "U+"
 
-  uc unicode U+4EAC
+  uc convert -u U+4EAC
   output: 
   京
 
-  uc unicode 4EAC
+  uc convert -u 4EAC
   output: 
   京 
 
-  uc unicode -s 京
+  uc convert 京
   output: 
   U+4EAC 
 `
@@ -36,13 +36,13 @@ var convertCmd = &cobra.Command{
 
 func init() {
 	convertCmd.Flags().BoolVarP(&removeSpaceConvertCmd, "remove-space", "", false, "removes space in between each digit")
-	convertCmd.Flags().BoolVarP(&inputIsStrConvertCmd, "str", "s", false, "input is string")
+	convertCmd.Flags().BoolVarP(&inputCodePointConvertCmd, "unicode", "u", false, "input is a sequence of Unicode code points")
 	rootCmd.AddCommand(convertCmd)
 }
 
 func runConvertCmd(cmd *cobra.Command, args []string) error {
 	for _, str := range args {
-		if !inputIsStrConvertCmd {
+		if inputCodePointConvertCmd {
 			// input is sequence of Unicode code points
 			if str[:2] == "U+" {
 				str = str[2:]
@@ -70,9 +70,9 @@ func unicodeCmdPrint(r rune) {
 	if removeSpaceConvertCmd {
 		space = ""
 	}
-	if inputIsStrConvertCmd {
-		fmt.Printf("%U%s", r, space)
-	} else {
+	if inputCodePointConvertCmd {
 		fmt.Printf("%c%s", r, space)
+	} else {
+		fmt.Printf("%U%s", r, space)
 	}
 }
