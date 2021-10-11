@@ -8,40 +8,36 @@ import (
 	"strconv"
 )
 
-var outputIsCodePoint bool
-var inputIsHex bool
+var outputCodePoint bool
+var inputHex bool
 var decodeCmd = &cobra.Command{
 	Use:   "decode [<args>]",
 	Short: "Decode UTF-8 sequence to string",
 	Long: "Convert a sequence of UTF-8 encoded values to a string",
 	Args: cobra.MinimumNArgs(1),
-	Run: handle,																																											
+	RunE: handleDecodeCmd,																																											
 }
 
 func init() {
-	decodeCmd.Flags().BoolVarP(&outputIsCodePoint, "output-unicode", "u", false, "output will be a sequence of Unicode code points")
-	decodeCmd.Flags().BoolVarP(&inputIsHex, "input-hex", "x", false, "input will be sequence of two hex digits")
+	decodeCmd.Flags().BoolVarP(&outputCodePoint, "output-unicode", "u", false, "output will be a sequence of Unicode code points")
+	decodeCmd.Flags().BoolVarP(&inputHex, "input-hex", "x", false, "input will be sequence of two hex digits")
 	rootCmd.AddCommand(decodeCmd)
 }
 
-func handle(cmd *cobra.Command, args []string) {
+func handleDecodeCmd(cmd *cobra.Command, args []string) error {
 	var b bytes.Buffer
 	base := 10
-	if inputIsHex {
+	if inputHex {
 		base = 16
 	}
 	for _, value := range args {
 		codepoint,err := strconv.ParseUint(value, base, 8)
 		if err != nil {
-			fmt.Println("Value is too big")
+			return err
 		}
-		// since input is sequence of bytes
-		err = b.WriteByte(byte(codepoint))
-		if err != nil {
-			fmt.Println("Something happened")
-		}
+		b.WriteByte(byte(codepoint))
 	}
-	if outputIsCodePoint {
+	if outputCodePoint {
 		for rawb := b.Bytes(); len(rawb) > 0; {
 			r, size := utf8.DecodeRune(rawb)
 			fmt.Printf("%U ", r)
@@ -51,4 +47,5 @@ func handle(cmd *cobra.Command, args []string) {
 	} else {
 		fmt.Println(string(b.Bytes()))
 	}
+	return nil
 }
