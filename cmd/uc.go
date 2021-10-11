@@ -15,8 +15,7 @@ var (
 	rootCmd = &cobra.Command{
 		Use:   "uc",
 		Short: "Unicode Converter",
-		// PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		// }
+		SilenceUsage: true,
 	}
 )
 
