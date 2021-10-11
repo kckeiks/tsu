@@ -17,13 +17,7 @@ var encodeCmd = &cobra.Command{
 	Short: "Encode string using UTF-8",
 	Long: "Convert a string to a sequence of UTF-8 encoded values",
 	Args: cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		if inputIsStrEncodeCmd {
-			handleStringInput(args)
-		} else {
-			handleCodePointInput(args)
-		}
-	},																																											
+	RunE: runEncodeCmd,																																											
 }
 
 func init() {
@@ -34,7 +28,15 @@ func init() {
 	rootCmd.AddCommand(encodeCmd)
 }
 
-func handleStringInput(args []string) {
+func runEncodeCmd(cmd *cobra.Command, args []string) error {
+	if inputIsStrEncodeCmd {
+		return handleStringInput(args)
+	} else {
+		return handleCodePointInput(args)
+	}
+}
+
+func handleStringInput(args []string) error {
 	for _, str := range args {
 		for len(str) > 0 {
 			r, size := utf8.DecodeRuneInString(str)
@@ -43,9 +45,10 @@ func handleStringInput(args []string) {
 		}
 		fmt.Printf("\n")																																		
 	}
+	return nil
 }
 
-func handleCodePointInput(args []string) {
+func handleCodePointInput(args []string) error {
 	result := bytes.NewBuffer([]byte{})
 	// utf8 uses up to 4 bytes
 	result.Grow(len(args)*4)
@@ -55,11 +58,15 @@ func handleCodePointInput(args []string) {
 		if str[:2] == "U+" {
 			str = str[2:]
 		}
-		codepoint, _ := strconv.ParseUint(str, 16, 32)
+		codepoint, err := strconv.ParseUint(str, 16, 32)
+		if err != nil {
+			return err
+		}
 		n := utf8.EncodeRune(buf[:], rune(codepoint))
 		result.Write(buf[:n])																												
 	}
-	cpUTF8CmdPrint(result.Bytes())	
+	cpUTF8CmdPrint(result.Bytes())
+	return nil
 }
 
 func cpUTF8CmdPrint(buff []byte) {
