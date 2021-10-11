@@ -11,7 +11,7 @@ import (
 var removeSpaceEncodeCmd bool
 var resultInHexEncodeCmd bool
 var prefixEncodeCmd string
-var inputIsStrEncodeCmd bool
+var inputCodePointEncodeCmd bool
 var encodeCmd = &cobra.Command{
 	Use:   "encode [<args>]",
 	Short: "Encode string using UTF-8",
@@ -22,17 +22,17 @@ var encodeCmd = &cobra.Command{
 
 func init() {
 	encodeCmd.Flags().BoolVarP(&removeSpaceEncodeCmd, "remove-space", "", false, "removes space in between each digit")
-	encodeCmd.Flags().BoolVarP(&inputIsStrEncodeCmd, "str", "s", false, "input is a string")
+	encodeCmd.Flags().BoolVarP(&inputCodePointEncodeCmd, "unicode", "u", false, "input is a sequence of Unicode code points")
 	encodeCmd.Flags().BoolVarP(&resultInHexEncodeCmd, "hex", "x", false, "return result in hex")
 	encodeCmd.Flags().StringVarP(&prefixEncodeCmd, "prefix", "", "", "add prefix to every two hex digits")
 	rootCmd.AddCommand(encodeCmd)
 }
 
 func runEncodeCmd(cmd *cobra.Command, args []string) error {
-	if inputIsStrEncodeCmd {
-		return handleStringInput(args)
-	} else {
+	if inputCodePointEncodeCmd {
 		return handleCodePointInput(args)
+	} else {
+		return handleStringInput(args)
 	}
 }
 

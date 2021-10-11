@@ -27,7 +27,7 @@ var unicodeCmdExample =
 `
 
 var convertCmd = &cobra.Command{
-	Use:   "convert {code_point | -s string} ...",
+	Use:   "convert {-u code_point | string} ...",
 	Short: "Convert string to/from Unicode code points",
 	Example: unicodeCmdExample,
 	Args: cobra.MinimumNArgs(1),
