@@ -23,7 +23,7 @@ var (
 		Long:    "Convert a sequence of UTF-8 encoded values to a string",
 		Args:    cobra.MinimumNArgs(1),
 		Example: decodeCmdExample,
-		RunE:    handleDecodeCmd,
+		RunE:    runDecodeCmd,
 	}
 )
 
@@ -33,7 +33,7 @@ func init() {
 	rootCmd.AddCommand(decodeCmd)
 }
 
-func handleDecodeCmd(cmd *cobra.Command, args []string) error {
+func runDecodeCmd(cmd *cobra.Command, args []string) error {
 	var buf bytes.Buffer
 	base := 10
 	if inputHexDecodeCmd {
