@@ -41,19 +41,21 @@ func init() {
 }
 
 func runConvertCmd(cmd *cobra.Command, args []string) error {
-	for _, str := range args {
-		if inputCodePointConvertCmd {
-			// input is code point
-			if strings.HasPrefix(str, "U+") {
-				str = str[2:]
+	if inputCodePointConvertCmd {
+		for _, codepoint := range args {
+			// args are converted to a single string
+			if strings.HasPrefix(codepoint, "U+") {
+				codepoint = codepoint[2:]
 			}
-			codepoint, err := strconv.ParseInt(str, 16, 32)
+			i, err := strconv.ParseUint(codepoint, 16, 32)
 			if err != nil {
 				return err
 			}
-			fmt.Printf("%c", codepoint)
-		} else {
-			// input is string
+			fmt.Printf("%c", i)
+		}
+	} else {
+		for _, str := range args {
+			// each arg is converted to a sequence of code points
 			for len(str) > 0 {
 				r, size := utf8.DecodeRuneInString(str)
 				fmt.Printf("%U ", r)
