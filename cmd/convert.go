@@ -43,7 +43,7 @@ func init() {
 func runConvertCmd(cmd *cobra.Command, args []string) error {
 	for _, str := range args {
 		if inputCodePointConvertCmd {
-			// TODO: Check length
+			// input is code point
 			if strings.HasPrefix(str, "U+") {
 				str = str[2:]
 			}
