@@ -46,8 +46,9 @@ func runEncodeCmd(cmd *cobra.Command, args []string) error {
 			n := utf8.EncodeRune(buf[:], rune(codepoint))
 			result.Write(buf[:n])																												
 		}
-		printEncodeCmd(result.Bytes())
+		printBytes(result.Bytes())
 	} else {
+		// input is a string
 		for _, str := range args {
 			for len(str) > 0 {
 				r, size := utf8.DecodeRuneInString(str)
@@ -55,14 +56,14 @@ func runEncodeCmd(cmd *cobra.Command, args []string) error {
 				result.Write(buf[:n])
 				str = str[size:]
 			}
-			printEncodeCmd(result.Bytes())
+			printBytes(result.Bytes())
 			result.Reset()
 		}
 	}
 	return nil
 }
 
-func printEncodeCmd(buff []byte) {
+func printBytes(buff []byte) {
 	space := " "
 	if removeSpaceEncodeCmd {
 		space = ""
@@ -76,15 +77,3 @@ func printEncodeCmd(buff []byte) {
 	}
 	fmt.Printf("\n")
 }
-
-// func printRune(r rune) {
-// 	space := " "
-// 	if removeSpaceEncodeCmd {
-// 		space = ""
-// 	}
-// 	result := make([]byte, 4)
-// 	n := utf8.EncodeRune(result, r)
-// 	for _, b := range result[:n] {
-
-// 	}
-// }
