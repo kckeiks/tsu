@@ -8,22 +8,33 @@ import (
 	"strconv"
 )
 
-var removeSpaceEncodeCmd bool
-var resultInHexEncodeCmd bool
-var prefixEncodeCmd string
-var inputCodePointEncodeCmd bool
-var encodeCmd = &cobra.Command{
-	Use:   "encode [<args>]",
-	Short: "Encode string using UTF-8",
-	Long: "Convert a string to a sequence of UTF-8 encoded values",
-	Args: cobra.MinimumNArgs(1),
-	RunE: runEncodeCmd,																																											
-}
+var encodeCmdExample = 
+`
+  uc encode hello world -x
+  output: 
+  68 65 6C 6C 6F 
+  77 6F 72 6C 64 
+`
+
+var (
+	removeSpaceEncodeCmd bool
+ 	outputHexEncodeCmd bool
+ 	prefixEncodeCmd string
+ 	inputCodePointEncodeCmd bool
+ 	encodeCmd = &cobra.Command{
+		Use:   "encode [<args>]",
+		Short: "Encode string using UTF-8",
+		Long: "Convert a string to a sequence of UTF-8 encoded values",
+		Example: encodeCmdExample,
+		Args: cobra.MinimumNArgs(1),
+		RunE: runEncodeCmd,
+	}
+)
 
 func init() {
-	encodeCmd.Flags().BoolVarP(&removeSpaceEncodeCmd, "remove-space", "", false, "removes space in between each digit")
+	encodeCmd.Flags().BoolVarP(&removeSpaceEncodeCmd, "remove-space", "", false, "removes space between each two hex digits in output")
 	encodeCmd.Flags().BoolVarP(&inputCodePointEncodeCmd, "unicode", "u", false, "input is a sequence of Unicode code points")
-	encodeCmd.Flags().BoolVarP(&resultInHexEncodeCmd, "hex", "x", false, "return result in hex")
+	encodeCmd.Flags().BoolVarP(&outputHexEncodeCmd, "hex", "x", false, "output hexadecimal numbers")
 	encodeCmd.Flags().StringVarP(&prefixEncodeCmd, "prefix", "", "", "add prefix to every two hex digits")
 	rootCmd.AddCommand(encodeCmd)
 }
@@ -34,8 +45,8 @@ func runEncodeCmd(cmd *cobra.Command, args []string) error {
 	result.Grow(len(args)*4)
 	buf := [4]byte{}
 	if inputCodePointEncodeCmd {
+		// input is sequence of Unicode code points
 		for _, str := range args {
-			// input is sequence of Unicode code points
 			if str[:2] == "U+" {
 				str = str[2:]
 			}
@@ -69,7 +80,7 @@ func printBytes(buff []byte) {
 		space = ""
 	}
 	for _, b := range buff {
-		if resultInHexEncodeCmd {
+		if outputHexEncodeCmd {
 			fmt.Printf("%s%X%s", prefixEncodeCmd, b, space)
 		} else {
 			fmt.Printf("%d%s", b, space)
