@@ -30,10 +30,34 @@ func init() {
 
 func runEncodeCmd(cmd *cobra.Command, args []string) error {
 	if inputCodePointEncodeCmd {
-		return handleCodePointInput(args)
+		result := bytes.NewBuffer([]byte{})
+		// utf8 uses up to 4 bytes
+		result.Grow(len(args)*4)
+		buf := [4]byte{}
+		for _, str := range args {
+			// input is sequence of Unicode code points
+			if str[:2] == "U+" {
+				str = str[2:]
+			}
+			codepoint, err := strconv.ParseUint(str, 16, 32)
+			if err != nil {
+				return err
+			}
+			n := utf8.EncodeRune(buf[:], rune(codepoint))
+			result.Write(buf[:n])																												
+		}
+		cpUTF8CmdPrint(result.Bytes())
 	} else {
-		return handleStringInput(args)
+		for _, str := range args {
+			for len(str) > 0 {
+				r, size := utf8.DecodeRuneInString(str)
+				strUTF8CmdPrint(r)
+				str = str[size:]
+			}
+			fmt.Printf("\n")																																		
+		}
 	}
+	return nil
 }
 
 func handleStringInput(args []string) error {

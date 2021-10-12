@@ -7,7 +7,6 @@ import (
 	"unicode/utf8"
 )
 
-var removeSpaceConvertCmd bool
 var inputCodePointConvertCmd bool
 var unicodeCmdExample = 
 `
@@ -35,7 +34,6 @@ var convertCmd = &cobra.Command{
 }
 
 func init() {
-	convertCmd.Flags().BoolVarP(&removeSpaceConvertCmd, "remove-space", "", false, "removes space in between each digit")
 	convertCmd.Flags().BoolVarP(&inputCodePointConvertCmd, "unicode", "u", false, "input is a sequence of Unicode code points")
 	rootCmd.AddCommand(convertCmd)
 }
@@ -43,7 +41,7 @@ func init() {
 func runConvertCmd(cmd *cobra.Command, args []string) error {
 	for _, str := range args {
 		if inputCodePointConvertCmd {
-			// input is sequence of Unicode code points
+			// TODO: Check length
 			if str[:2] == "U+" {
 				str = str[2:]
 			}
@@ -56,23 +54,11 @@ func runConvertCmd(cmd *cobra.Command, args []string) error {
 			// input is string
 			for len(str) > 0 {
 				r, size := utf8.DecodeRuneInString(str)
-				unicodeCmdPrint(r)
+				fmt.Printf("%U ", r)
 				str = str[size:]
 			}
-			fmt.Printf("\n")	
+			fmt.Printf("\n")
 		}																																	
 	}
 	return nil
-}
-
-func unicodeCmdPrint(r rune) {
-	space := " "
-	if removeSpaceConvertCmd {
-		space = ""
-	}
-	if inputCodePointConvertCmd {
-		fmt.Printf("%c%s", r, space)
-	} else {
-		fmt.Printf("%U%s", r, space)
-	}
 }
