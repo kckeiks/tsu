@@ -2,11 +2,11 @@ package main
 
 import (
 	"github.com/kckeiks/tsu/cmd"
-  "os"
+	"os"
 )
-  
+
 func main() {
-  if err := cmd.Execute(); err != nil {
-    os.Exit(1)
-  }
+	if err := cmd.Execute(); err != nil {
+		os.Exit(1)
+	}
 }
