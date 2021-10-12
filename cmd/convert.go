@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"github.com/spf13/cobra"
 	"unicode/utf8"
+	"strings"
 )
 
-var inputCodePointConvertCmd bool
 var unicodeCmdExample = 
 `
   Unicode code points may omit a prefix or include "U+"
@@ -25,13 +25,16 @@ var unicodeCmdExample =
   U+4EAC 
 `
 
-var convertCmd = &cobra.Command{
-	Use:   "convert {-u code_point | string} ...",
-	Short: "Convert string to/from Unicode code points",
-	Example: unicodeCmdExample,
-	Args: cobra.MinimumNArgs(1),
-	RunE: runConvertCmd,																																												
-}
+var (
+	inputCodePointConvertCmd bool
+	convertCmd = &cobra.Command{
+		Use:   "convert [<args>]",
+		Short: "Convert string to/from Unicode code points",
+		Example: unicodeCmdExample,
+		Args: cobra.MinimumNArgs(1),
+		RunE: runConvertCmd,
+	}
+)
 
 func init() {
 	convertCmd.Flags().BoolVarP(&inputCodePointConvertCmd, "unicode", "u", false, "input is a sequence of Unicode code points")
@@ -42,14 +45,14 @@ func runConvertCmd(cmd *cobra.Command, args []string) error {
 	for _, str := range args {
 		if inputCodePointConvertCmd {
 			// TODO: Check length
-			if str[:2] == "U+" {
+			if strings.HasPrefix(str, "U+") {
 				str = str[2:]
 			}
 			codepoint, err := strconv.ParseInt(str, 16, 32)
 			if err != nil {
 				return err
 			}
-			fmt.Println(string(codepoint))
+			fmt.Printf("%c", codepoint)
 		} else {
 			// input is string
 			for len(str) > 0 {
@@ -57,8 +60,8 @@ func runConvertCmd(cmd *cobra.Command, args []string) error {
 				fmt.Printf("%U ", r)
 				str = str[size:]
 			}
-			fmt.Printf("\n")
-		}																																	
+		}
 	}
+	fmt.Printf("\n")
 	return nil
 }
