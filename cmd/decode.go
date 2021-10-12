@@ -8,26 +8,36 @@ import (
 	"strconv"
 )
 
-var outputCodePoint bool
-var inputHex bool
-var decodeCmd = &cobra.Command{
-	Use:   "decode [<args>]",
-	Short: "Decode UTF-8 sequence to string",
-	Long: "Convert a sequence of UTF-8 encoded values to a string",
-	Args: cobra.MinimumNArgs(1),
-	RunE: handleDecodeCmd,																																											
-}
+var decodeCmdExample = 
+`
+  uc decode 104 101 108 108 111 32 119 111 114 108 100
+  output:
+  hello world
+`
+
+var (
+	outputCodePointDecodeCmd bool
+	inputHexDecodeCmd bool
+	decodeCmd = &cobra.Command{
+		Use:   "decode [<args>]",
+		Short: "Decode UTF-8 encoded sequence",
+		Long: "Convert a sequence of UTF-8 encoded values to a string",
+		Args: cobra.MinimumNArgs(1),
+		Example: decodeCmdExample,
+		RunE: handleDecodeCmd,
+	}
+)
 
 func init() {
-	decodeCmd.Flags().BoolVarP(&outputCodePoint, "output-unicode", "u", false, "output will be a sequence of Unicode code points")
-	decodeCmd.Flags().BoolVarP(&inputHex, "input-hex", "x", false, "input will be sequence of two hex digits")
+	decodeCmd.Flags().BoolVarP(&outputCodePointDecodeCmd, "output-unicode", "u", false, "output will be a sequence of Unicode code points")
+	decodeCmd.Flags().BoolVarP(&inputHexDecodeCmd, "input-hex", "x", false, "input will be sequence of two hex digits")
 	rootCmd.AddCommand(decodeCmd)
 }
 
 func handleDecodeCmd(cmd *cobra.Command, args []string) error {
-	var b bytes.Buffer
+	var buf bytes.Buffer
 	base := 10
-	if inputHex {
+	if inputHexDecodeCmd {
 		base = 16
 	}
 	for _, value := range args {
@@ -35,17 +45,17 @@ func handleDecodeCmd(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return err
 		}
-		b.WriteByte(byte(codepoint))
+		buf.WriteByte(byte(codepoint))
 	}
-	if outputCodePoint {
-		for rawb := b.Bytes(); len(rawb) > 0; {
-			r, size := utf8.DecodeRune(rawb)
+	if outputCodePointDecodeCmd {
+		for bytesBuff := buf.Bytes(); len(bytesBuff) > 0; {
+			r, size := utf8.DecodeRune(bytesBuff)
 			fmt.Printf("%U ", r)
-			rawb = rawb[size:]
+			bytesBuff = bytesBuff[size:]
 		}
 		fmt.Printf("\n")
 	} else {
-		fmt.Println(string(b.Bytes()))
+		fmt.Println(string(buf.Bytes()))
 	}
 	return nil
 }
