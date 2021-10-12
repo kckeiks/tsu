@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"strconv"
+	"strings"
 	"unicode/utf8"
 )
 
@@ -44,22 +45,22 @@ func runEncodeCmd(cmd *cobra.Command, args []string) error {
 	result.Grow(len(args) * 4)
 	buf := [4]byte{}
 	if inputCodePointEncodeCmd {
-		// input is sequence of Unicode code points
-		for _, str := range args {
-			if str[:2] == "U+" {
-				str = str[2:]
+		for _, codepoint := range args {
+			// args are treated as a single string to be encoded
+			if strings.HasPrefix(codepoint, "U+") {
+				codepoint = codepoint[2:]
 			}
-			codepoint, err := strconv.ParseUint(str, 16, 32)
+			i, err := strconv.ParseUint(codepoint, 16, 32)
 			if err != nil {
 				return err
 			}
-			n := utf8.EncodeRune(buf[:], rune(codepoint))
+			n := utf8.EncodeRune(buf[:], rune(i))
 			result.Write(buf[:n])
 		}
 		printBytes(result.Bytes())
 	} else {
-		// input is a string
 		for _, str := range args {
+			// args are treated as separately strings to be encoded
 			for len(str) > 0 {
 				r, size := utf8.DecodeRuneInString(str)
 				n := utf8.EncodeRune(buf[:], r)
