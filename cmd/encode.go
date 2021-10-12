@@ -29,11 +29,11 @@ func init() {
 }
 
 func runEncodeCmd(cmd *cobra.Command, args []string) error {
+	result := bytes.NewBuffer([]byte{})
+	// utf8 uses up to 4 bytes
+	result.Grow(len(args)*4)
+	buf := [4]byte{}
 	if inputCodePointEncodeCmd {
-		result := bytes.NewBuffer([]byte{})
-		// utf8 uses up to 4 bytes
-		result.Grow(len(args)*4)
-		buf := [4]byte{}
 		for _, str := range args {
 			// input is sequence of Unicode code points
 			if str[:2] == "U+" {
@@ -46,54 +46,23 @@ func runEncodeCmd(cmd *cobra.Command, args []string) error {
 			n := utf8.EncodeRune(buf[:], rune(codepoint))
 			result.Write(buf[:n])																												
 		}
-		cpUTF8CmdPrint(result.Bytes())
+		printEncodeCmd(result.Bytes())
 	} else {
 		for _, str := range args {
 			for len(str) > 0 {
 				r, size := utf8.DecodeRuneInString(str)
-				strUTF8CmdPrint(r)
+				n := utf8.EncodeRune(buf[:], r)
+				result.Write(buf[:n])
 				str = str[size:]
 			}
-			fmt.Printf("\n")																																		
+			printEncodeCmd(result.Bytes())
+			result.Reset()
 		}
 	}
 	return nil
 }
 
-func handleStringInput(args []string) error {
-	for _, str := range args {
-		for len(str) > 0 {
-			r, size := utf8.DecodeRuneInString(str)
-			strUTF8CmdPrint(r)
-			str = str[size:]
-		}
-		fmt.Printf("\n")																																		
-	}
-	return nil
-}
-
-func handleCodePointInput(args []string) error {
-	result := bytes.NewBuffer([]byte{})
-	// utf8 uses up to 4 bytes
-	result.Grow(len(args)*4)
-	buf := [4]byte{}
-	for _, str := range args {
-		// input is sequence of Unicode code points
-		if str[:2] == "U+" {
-			str = str[2:]
-		}
-		codepoint, err := strconv.ParseUint(str, 16, 32)
-		if err != nil {
-			return err
-		}
-		n := utf8.EncodeRune(buf[:], rune(codepoint))
-		result.Write(buf[:n])																												
-	}
-	cpUTF8CmdPrint(result.Bytes())
-	return nil
-}
-
-func cpUTF8CmdPrint(buff []byte) {
+func printEncodeCmd(buff []byte) {
 	space := " "
 	if removeSpaceEncodeCmd {
 		space = ""
@@ -108,18 +77,14 @@ func cpUTF8CmdPrint(buff []byte) {
 	fmt.Printf("\n")
 }
 
-func strUTF8CmdPrint(r rune) {
-	space := " "
-	if removeSpaceEncodeCmd {
-		space = ""
-	}
-	result := make([]byte, 4)
-	n := utf8.EncodeRune(result, r)
-	for _, b := range result[:n] {
-		if resultInHexEncodeCmd {
-			fmt.Printf("%s%x%s", prefixEncodeCmd, b, space)
-		} else {
-			fmt.Printf("%d%s", b, space)
-		}
-	}
-}
+// func printRune(r rune) {
+// 	space := " "
+// 	if removeSpaceEncodeCmd {
+// 		space = ""
+// 	}
+// 	result := make([]byte, 4)
+// 	n := utf8.EncodeRune(result, r)
+// 	for _, b := range result[:n] {
+
+// 	}
+// }
