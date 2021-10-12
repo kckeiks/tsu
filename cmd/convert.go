@@ -2,14 +2,13 @@ package cmd
 
 import (
 	"fmt"
-	"strconv"
 	"github.com/spf13/cobra"
-	"unicode/utf8"
+	"strconv"
 	"strings"
+	"unicode/utf8"
 )
 
-var unicodeCmdExample = 
-`
+var unicodeCmdExample = `
   Unicode code points may omit a prefix or include "U+"
 
   uc convert -u U+4EAC
@@ -27,12 +26,12 @@ var unicodeCmdExample =
 
 var (
 	inputCodePointConvertCmd bool
-	convertCmd = &cobra.Command{
-		Use:   "convert [<args>]",
-		Short: "Convert string to/from Unicode code points",
+	convertCmd               = &cobra.Command{
+		Use:     "convert [<args>]",
+		Short:   "Convert string to/from Unicode code points",
 		Example: unicodeCmdExample,
-		Args: cobra.MinimumNArgs(1),
-		RunE: runConvertCmd,
+		Args:    cobra.MinimumNArgs(1),
+		RunE:    runConvertCmd,
 	}
 )
 

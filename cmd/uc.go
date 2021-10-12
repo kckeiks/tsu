@@ -8,9 +8,9 @@ var (
 	// Used for flags.
 	cfgFile     string
 	userLicense string
-	rootCmd = &cobra.Command{
-		Use:   "uc",
-		Short: "Unicode Converter",
+	rootCmd     = &cobra.Command{
+		Use:          "uc",
+		Short:        "Unicode Converter",
 		SilenceUsage: true,
 	}
 )
@@ -19,4 +19,3 @@ var (
 func Execute() error {
 	return rootCmd.Execute()
 }
-

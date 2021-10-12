@@ -1,15 +1,14 @@
 package cmd
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/spf13/cobra"
-	"unicode/utf8"
-	"bytes"
 	"strconv"
+	"unicode/utf8"
 )
 
-var encodeCmdExample = 
-`
+var encodeCmdExample = `
   uc encode hello world -x
   output: 
   68 65 6C 6C 6F 
@@ -17,17 +16,17 @@ var encodeCmdExample =
 `
 
 var (
-	removeSpaceEncodeCmd bool
- 	outputHexEncodeCmd bool
- 	prefixEncodeCmd string
- 	inputCodePointEncodeCmd bool
- 	encodeCmd = &cobra.Command{
-		Use:   "encode [<args>]",
-		Short: "Encode string using UTF-8",
-		Long: "Convert a string to a sequence of UTF-8 encoded values",
+	removeSpaceEncodeCmd    bool
+	outputHexEncodeCmd      bool
+	prefixEncodeCmd         string
+	inputCodePointEncodeCmd bool
+	encodeCmd               = &cobra.Command{
+		Use:     "encode [<args>]",
+		Short:   "Encode string using UTF-8",
+		Long:    "Convert a string to a sequence of UTF-8 encoded values",
 		Example: encodeCmdExample,
-		Args: cobra.MinimumNArgs(1),
-		RunE: runEncodeCmd,
+		Args:    cobra.MinimumNArgs(1),
+		RunE:    runEncodeCmd,
 	}
 )
 
@@ -42,7 +41,7 @@ func init() {
 func runEncodeCmd(cmd *cobra.Command, args []string) error {
 	result := bytes.NewBuffer([]byte{})
 	// utf8 uses up to 4 bytes
-	result.Grow(len(args)*4)
+	result.Grow(len(args) * 4)
 	buf := [4]byte{}
 	if inputCodePointEncodeCmd {
 		// input is sequence of Unicode code points
@@ -55,7 +54,7 @@ func runEncodeCmd(cmd *cobra.Command, args []string) error {
 				return err
 			}
 			n := utf8.EncodeRune(buf[:], rune(codepoint))
-			result.Write(buf[:n])																												
+			result.Write(buf[:n])
 		}
 		printBytes(result.Bytes())
 	} else {

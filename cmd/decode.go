@@ -1,15 +1,14 @@
 package cmd
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/spf13/cobra"
-	"unicode/utf8"
-	"bytes"
 	"strconv"
+	"unicode/utf8"
 )
 
-var decodeCmdExample = 
-`
+var decodeCmdExample = `
   uc decode 104 101 108 108 111 32 119 111 114 108 100
   output:
   hello world
@@ -17,14 +16,14 @@ var decodeCmdExample =
 
 var (
 	outputCodePointDecodeCmd bool
-	inputHexDecodeCmd bool
-	decodeCmd = &cobra.Command{
-		Use:   "decode [<args>]",
-		Short: "Decode UTF-8 encoded sequence",
-		Long: "Convert a sequence of UTF-8 encoded values to a string",
-		Args: cobra.MinimumNArgs(1),
+	inputHexDecodeCmd        bool
+	decodeCmd                = &cobra.Command{
+		Use:     "decode [<args>]",
+		Short:   "Decode UTF-8 encoded sequence",
+		Long:    "Convert a sequence of UTF-8 encoded values to a string",
+		Args:    cobra.MinimumNArgs(1),
 		Example: decodeCmdExample,
-		RunE: handleDecodeCmd,
+		RunE:    handleDecodeCmd,
 	}
 )
 
@@ -41,7 +40,7 @@ func handleDecodeCmd(cmd *cobra.Command, args []string) error {
 		base = 16
 	}
 	for _, value := range args {
-		codepoint,err := strconv.ParseUint(value, base, 8)
+		codepoint, err := strconv.ParseUint(value, base, 8)
 		if err != nil {
 			return err
 		}
