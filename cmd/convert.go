@@ -12,13 +12,10 @@ import (
 var unicodeCmdExample = `
   Unicode code points may omit a prefix or include "U+"
 
-  uc convert -u U+4EAC
+  uc convert -u U+4EACU+4EAC U+4EAC
   output: 
+  京京
   京
-
-  uc convert -u 4EAC
-  output: 
-  京 
 
   uc convert 京
   output: 
