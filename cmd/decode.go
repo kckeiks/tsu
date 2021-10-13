@@ -3,9 +3,10 @@ package cmd
 import (
 	"bytes"
 	"fmt"
-	"github.com/spf13/cobra"
 	"strconv"
 	"unicode/utf8"
+
+	"github.com/spf13/cobra"
 )
 
 var decodeCmdExample = `

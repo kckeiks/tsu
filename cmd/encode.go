@@ -3,11 +3,11 @@ package cmd
 import (
 	"bytes"
 	"fmt"
-	"github.com/spf13/cobra"
 	"strconv"
-	"errors"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/spf13/cobra"
 )
 
 var encodeCmdExample = `
@@ -50,7 +50,7 @@ func runEncodeCmd(cmd *cobra.Command, args []string) error {
 			// Split returns empty string as first element because arg has prefix U+
 			codePointSequence = strings.TrimSpace(codePointSequence)
 			if codePointSequence == "" {
-				return errors.New("invalid arg")
+				return emptyStrError
 			}
 			for _, codePoint := range strings.Split(codePointSequence, "U+")[1:] {
 				i, err := strconv.ParseUint(codePoint, 16, 32)

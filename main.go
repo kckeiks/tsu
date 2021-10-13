@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/kckeiks/tsu/cmd"
 	"os"
+
+	"github.com/kckeiks/tsu/cmd"
 )
 
 func main() {
