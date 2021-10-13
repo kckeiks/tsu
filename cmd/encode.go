@@ -3,10 +3,11 @@ package cmd
 import (
 	"bytes"
 	"fmt"
-	"github.com/spf13/cobra"
 	"strconv"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/spf13/cobra"
 )
 
 var encodeCmdExample = `
@@ -45,19 +46,26 @@ func runEncodeCmd(cmd *cobra.Command, args []string) error {
 	result.Grow(len(args) * 4)
 	buf := [4]byte{}
 	if inputCodePointEncodeCmd {
-		for _, codepoint := range args {
-			// args are treated as a single string to be encoded
-			if strings.HasPrefix(codepoint, "U+") {
-				codepoint = codepoint[2:]
+		for _, codePointSequence := range args {
+			// Split returns empty string as first element because arg has prefix U+
+			codePointSequence = strings.TrimSpace(codePointSequence)
+			if codePointSequence == "" {
+				return emptyStrError
 			}
-			i, err := strconv.ParseUint(codepoint, 16, 32)
-			if err != nil {
-				return err
+			if !strings.HasPrefix(codePointSequence, "U+") {
+				return invalidArgType
 			}
-			n := utf8.EncodeRune(buf[:], rune(i))
-			result.Write(buf[:n])
+			for _, codePoint := range strings.Split(codePointSequence, "U+")[1:] {
+				i, err := strconv.ParseUint(codePoint, 16, 32)
+				if err != nil {
+					return err
+				}
+				n := utf8.EncodeRune(buf[:], rune(i))
+				result.Write(buf[:n])
+			}
+			printBytes(result.Bytes())
+			result.Reset()
 		}
-		printBytes(result.Bytes())
 	} else {
 		for _, str := range args {
 			// args are treated as separately strings to be encoded
