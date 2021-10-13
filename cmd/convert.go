@@ -24,6 +24,7 @@ var unicodeCmdExample = `
 
 var (
 	inputCodePointConvertCmd bool
+	removeSpaceConvertCmd    bool
 	convertCmd               = &cobra.Command{
 		Use:     "convert [<args>]",
 		Short:   "Convert string to/from Unicode code points",
@@ -34,6 +35,7 @@ var (
 )
 
 func init() {
+	convertCmd.Flags().BoolVarP(&removeSpaceConvertCmd, "remove-space", "", false, "removes space between Unicode code points")
 	convertCmd.Flags().BoolVarP(&inputCodePointConvertCmd, "unicode", "u", false, "input is a sequence of Unicode code points")
 	rootCmd.AddCommand(convertCmd)
 }
@@ -61,9 +63,13 @@ func runConvertCmd(cmd *cobra.Command, args []string) error {
 	} else {
 		for _, str := range args {
 			// each arg is converted to a sequence of code points
+			space := " "
+			if removeSpaceConvertCmd {
+				space = ""
+			}
 			for len(str) > 0 {
 				r, size := utf8.DecodeRuneInString(str)
-				fmt.Printf("%U ", r)
+				fmt.Printf("%U%s", r, space)
 				str = str[size:]
 			}
 			fmt.Printf("\n")
