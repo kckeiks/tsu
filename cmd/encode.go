@@ -52,6 +52,9 @@ func runEncodeCmd(cmd *cobra.Command, args []string) error {
 			if codePointSequence == "" {
 				return emptyStrError
 			}
+			if !strings.HasPrefix(codePointSequence, "U+") {
+				return invalidArgType
+			}
 			for _, codePoint := range strings.Split(codePointSequence, "U+")[1:] {
 				i, err := strconv.ParseUint(codePoint, 16, 32)
 				if err != nil {
